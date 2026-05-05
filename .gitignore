@@ -1,0 +1,30 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Output/results
+output/
+results/
+frames_raw/
+frames_filtered/
+colmap/
+openmvs/
+meshes/
+reports/
+
+# Local tool paths
+tool_config.yaml
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
