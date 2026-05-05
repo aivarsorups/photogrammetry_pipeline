@@ -34,25 +34,30 @@ def parse_args():
         "--visualize",
         type=str_to_bool,
         default=False,
-        help="Show Open3D visualization windows: true or false"
+        metavar="true|false",
+        help=(
+            "OPTIONAL. Show Open3D visualization windows.\n"
+            "Use true or false. Default: false.\n"
+            "Example: --visualize true"
+        )
     )
 
     parser.add_argument(
-    "--bpa",
-    action="store_true",
-    help="Run Ball Pivoting Algorithm mesh generation"
+        "--bpa",
+        action="store_true",
+        help="OPTIONAL. Run only/also Ball Pivoting Algorithm mesh generation."
     )
 
     parser.add_argument(
         "--poisson",
         action="store_true",
-        help="Run Poisson mesh generation"
+        help="OPTIONAL. Run only/also Poisson mesh generation."
     )
 
     parser.add_argument(
         "--alpha",
         action="store_true",
-        help="Run Alpha Shapes mesh generation"
+        help="OPTIONAL. Run only/also Alpha Shapes mesh generation."
     )
 
     return parser.parse_args()
