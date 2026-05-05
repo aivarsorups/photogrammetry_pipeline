@@ -45,7 +45,7 @@ run
 python -m pip install -r requirements.txt
 
 
-## External tools
+### External tools
 
 The following tools must be installed separately. Their executable paths should be configured in `tool_config.yaml`.:
 
@@ -61,8 +61,8 @@ if CUDA unavailable colmap-x64-windows-nocuda.zip
 download https://github.com/cdcseacave/openMVS/releases
 
 
-epilog="""
-Exmples to run:
+
+### Exmples to run:
 
 Run BPA, Poisson, Alpha mesh algorithms without visualization:
     python main.py --input "C:\\path\\to\\cloud.ply" --output_folder "C:\\path\\to\\output"
@@ -75,5 +75,3 @@ Run BPA with visualization:
 
 Run Poisson and Alpha without visualization:
     python main.py --input "C:\\path\\to\\cloud.ply" --output_folder "C:\\path\\to\\output" --poisson --alpha --visualize false
-
-"""
