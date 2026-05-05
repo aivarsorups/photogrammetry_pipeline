@@ -4,8 +4,11 @@ from pathlib import Path
 from pipeline_config import createPipelineConfig
 from video_processing import FFmpegFrameExtractor
 from frame_quality_filter import FrameQualityFilter
+from colmap_runner import ColmapPipeline
 from openmvs_runner import OpenMVSPipeline
 from mesh_bpa import create_bpa_mesh
+from mesh_poisson import create_poisson_mesh
+from mesh_alpha import create_alpha_mesh
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 TOOL_CONFIG_PATH = SCRIPT_DIR / "tool_config.yaml"
@@ -185,11 +188,8 @@ def main():
         raise ValueError(f"Unknown input type: {input_type}")
 
     if input_type in ["video", "images"]:
-
-        
-
-    # colmap = ColmapPipeline(cfg)
-    # colmap.run_all()
+        colmap = ColmapPipeline(cfg)
+        colmap.run_all()
 
         openMvs = OpenMVSPipeline(cfg)
         point_cloud_result = openMvs.run_all()
@@ -203,23 +203,23 @@ def main():
     if "bpa" in selected_algorithms:
         create_bpa_mesh(
             input_path=point_cloud_result,
-            output_path=cfg.mesh_dir / "bpa_mesh.obj",
+            output_path=cfg.result_dir / "bpa_mesh.obj",
             visualize=True
         )
 
-    # if "poisson" in selected_algorithms:
-    #     create_poisson_mesh(
-    #         input_path=point_cloud_result,
-    #         output_path=cfg.mesh_dir / "poisson_mesh.obj",
-    #         visualize=False
-    #     )
+    if "poisson" in selected_algorithms:
+        create_poisson_mesh(
+            input_path=point_cloud_result,
+            output_path=cfg.result_dir / "poisson_mesh.obj",
+            visualize=True
+        )
 
-    # if "alpha" in selected_algorithms:
-    #     create_alpha_mesh(
-    #         input_path=point_cloud_result,
-    #         output_path=cfg.mesh_dir / "alpha_mesh.obj",
-    #         visualize=False
-    #     )
+    if "alpha" in selected_algorithms:
+        create_alpha_mesh(
+            input_path=point_cloud_result,
+            output_path=cfg.result_dir / "alpha_mesh.obj",
+            visualize=False
+        )
 
 if __name__ == "__main__":
     main()
