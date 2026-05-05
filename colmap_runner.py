@@ -24,9 +24,6 @@ class ColmapPipeline:
                 "(patch_match_stereo and stereo_fusion)."
             )
 
-        # Ja mesh tiek veidots ar Open3D, šo posmu var neizpildīt.
-        # self.poisson_meshing()
-
     def run_command(self, cmd: list[str]):
         print("\nRunning command:")
         print(" ".join(str(c) for c in cmd))
@@ -114,7 +111,7 @@ class ColmapPipeline:
                 "No sparse model was created by COLMAP mapper."
             )
 
-        # Parasti COLMAP izveido sparse/0, bet drošāk ir atrast pirmo mapi.
+        # COLMAP izveido sparse/0, bet drošāk ir atrast pirmo mapi.
         return sorted(model_dirs)[0]
 
     def undistort_images(self):

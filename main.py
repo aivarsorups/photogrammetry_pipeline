@@ -31,6 +31,13 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--visualize",
+        type=str_to_bool,
+        default=False,
+        help="Show Open3D visualization windows: true or false"
+    )
+
+    parser.add_argument(
     "--bpa",
     action="store_true",
     help="Run Ball Pivoting Algorithm mesh generation"
@@ -49,6 +56,13 @@ def parse_args():
     )
 
     return parser.parse_args()
+
+def str_to_bool(value: str) -> bool:
+    if value.lower() in ("true", "1", "yes", "y"):
+        return True
+    if value.lower() in ("false", "0", "no", "n"):
+        return False
+    raise argparse.ArgumentTypeError("Expected true or false")
 
 def get_selected_mesh_algorithms(args) -> list[str]:
     selected = []
@@ -76,16 +90,16 @@ def load_tool_config() -> dict:
         return yaml.safe_load(file) or {}
 
 def prepare_output_dir(output_dir: Path):
-    # if output_dir.exists():
-    #     if not output_dir.is_dir():
-    #         raise NotADirectoryError(f"Output path exists but is not a folder: {output_dir}")
+    if output_dir.exists():
+        if not output_dir.is_dir():
+            raise NotADirectoryError(f"Output path exists but is not a folder: {output_dir}")
 
-    #     if any(output_dir.iterdir()):
-    #         raise FileExistsError(
-    #             f"Output folder is not empty: {output_dir}. "
-    #             "Please provide an empty folder or choose a new output folder."
-    #         )
-    # else:
+        if any(output_dir.iterdir()):
+            raise FileExistsError(
+                f"Output folder is not empty: {output_dir}. "
+                "Please provide an empty folder or choose a new output folder."
+            )
+    else:
         output_dir.mkdir(parents=True, exist_ok=True)
 
 def detect_input_type(input_path: Path) -> str:
@@ -132,6 +146,7 @@ def main():
     
     input_path = Path(args.input)
     output_dir = Path(args.output_folder)
+    visualize_mesh = args.visualize
 
     if not input_path.exists():
             raise FileNotFoundError(f"Input path does not exist: {input_path}")
@@ -165,7 +180,6 @@ def main():
             duplicate_threshold=5.0
         )
 
-        colmap_images_dir = frames_filtered_dir
 
     elif input_type == "images":
         frames_filtered_dir = output_dir / "frames_filtered"
@@ -178,11 +192,8 @@ def main():
             duplicate_threshold=5.0
         )
 
-        colmap_images_dir = frames_filtered_dir
-
     elif input_type == "ply":
         print("PLY input detected. Skipping COLMAP and using point cloud directly.")
-        colmap_images_dir = None
 
     else:
         raise ValueError(f"Unknown input type: {input_type}")
@@ -204,21 +215,21 @@ def main():
         create_bpa_mesh(
             input_path=point_cloud_result,
             output_path=cfg.result_dir / "bpa_mesh.obj",
-            visualize=True
+            visualize=visualize_mesh
         )
 
     if "poisson" in selected_algorithms:
         create_poisson_mesh(
             input_path=point_cloud_result,
             output_path=cfg.result_dir / "poisson_mesh.obj",
-            visualize=True
+            visualize=visualize_mesh
         )
 
     if "alpha" in selected_algorithms:
         create_alpha_mesh(
             input_path=point_cloud_result,
             output_path=cfg.result_dir / "alpha_mesh.obj",
-            visualize=False
+            visualize=visualize_mesh
         )
 
 if __name__ == "__main__":

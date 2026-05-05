@@ -18,9 +18,6 @@ openmvs/
 meshes/
 reports/
 
-# Local tool paths
-tool_config.yaml
-
 # IDE
 .vscode/
 .idea/
