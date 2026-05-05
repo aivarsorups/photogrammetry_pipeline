@@ -65,13 +65,18 @@ download https://github.com/cdcseacave/openMVS/releases
 ### Exmples to run:
 
 Run BPA, Poisson, Alpha mesh algorithms without visualization:
+```bash
     python main.py --input "C:\\path\\to\\cloud.ply" --output_folder "C:\\path\\to\\output"
-
+```
 Run only BPA:
+```bash
     python main.py --input "C:\\path\\to\\cloud.ply" --output_folder "C:\\path\\to\\output" --bpa
-
+```
 Run BPA with visualization:
+```bash
     python main.py --input "C:\\path\\to\\cloud.ply" --output_folder "C:\\path\\to\\output" --bpa --visualize true
-
+```
 Run Poisson and Alpha without visualization:
+```bash
     python main.py --input "C:\\path\\to\\cloud.ply" --output_folder "C:\\path\\to\\output" --poisson --alpha --visualize false
+```
