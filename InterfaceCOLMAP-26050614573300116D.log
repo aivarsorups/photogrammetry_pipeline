@@ -1,0 +1,28 @@
+14:57:33 [App     ] OpenMVS x64 v2.4.0
+14:57:33 [App     ] Build date: Jan 20 2026, 00:13:37
+14:57:33 [App     ] CPU: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz (12 cores)
+14:57:33 [App     ] RAM: 15.85GB Physical Memory 128.00TB Virtual Memory
+14:57:33 [App     ] OS: Windows 10 x64
+14:57:33 [App     ] Disk: 17.61GB (475.82GB) space
+14:57:33 [App     ] SSE & AVX compatible CPU & OS detected
+14:57:33 [App     ] Command line: InterfaceCOLMAP -i C:\Users\aivar\OneDrive\Dators\ccc\colmap\dense -o C:\Users\aivar\OneDrive\Dators\ccc\openmvs\scene.mvs --image-folder C:\Users\aivar\OneDrive\Dators\ccc\colmap\dense\images
+14:57:33 [App     ] Reading cameras: C:/Users/aivar/OneDrive/Dators/ccc/colmap/dense/sparse/cameras.bin
+14:57:33 [App     ] Reading images: C:/Users/aivar/OneDrive/Dators/ccc/colmap/dense/sparse/images.bin
+14:57:33 [App     ] Reading points: C:/Users/aivar/OneDrive/Dators/ccc/colmap/dense/sparse/points3D.bin
+14:57:33 [App     ] Reading points: C:/Users/aivar/OneDrive/Dators/ccc/colmap/dense/fused.ply and C:/Users/aivar/OneDrive/Dators/ccc/colmap/dense/fused.ply.vis
+14:57:33 [PointCld] Point-cloud 'fused.ply' loaded: 2494334 points (304ms)
+14:58:43 [App     ] Reading patch-match configuration: C:/Users/aivar/OneDrive/Dators/ccc/colmap/dense/stereo/patch-match.cfg
+14:58:43 [App     ] Reading depth-maps/normal-maps: C:/Users/aivar/OneDrive/Dators/ccc/colmap/dense/stereo/depth_maps/ and C:/Users/aivar/OneDrive/Dators/ccc/colmap/dense/stereo/normal_maps/
+14:59:13 [PointCld] Point-cloud 'scene.ply' saved: 2494334 points (988ms)
+14:59:13 [App     ] Exported data: 114 images, 51286 points, 2494334 dense points (1m40s283ms)
+14:59:13 [App     ] MEMORYINFO: {
+14:59:13 [App     ] 	PageFaultCount 1359113
+14:59:13 [App     ] 	PeakWorkingSetSize 328.11MB
+14:59:13 [App     ] 	WorkingSetSize 7.55MB
+14:59:13 [App     ] 	QuotaPeakPagedPoolUsage 58.97KB
+14:59:13 [App     ] 	QuotaPagedPoolUsage 58.66KB
+14:59:13 [App     ] 	QuotaPeakNonPagedPoolUsage 12.14KB
+14:59:13 [App     ] 	QuotaNonPagedPoolUsage 10.88KB
+14:59:13 [App     ] 	PagefileUsage 3.67MB
+14:59:13 [App     ] 	PeakPagefileUsage 330.88MB
+14:59:13 [App     ] } ENDINFO

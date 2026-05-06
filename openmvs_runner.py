@@ -17,33 +17,11 @@ class OpenMVSPipeline:
             print("Could not create dense point cloud.")
             print(e)
 
-        # If mesh is created with Open3D, you can skip OpenMVS mesh steps.
-        # self.reconstruct_mesh()
-
-        refined = False
-
-        try:
-            # self.refine_mesh()
-            refined = True
-        except Exception as e:
-            print("RefineMesh failed. Continue with unrefined mesh.")
-            print(e)
-
-        if refined and (self.cfg.openmvs_dir / "scene_dense_mesh_refine.ply").exists():
-            try:
-                self.texture_mesh(
-                    mesh_file=self.cfg.openmvs_dir / "scene_dense_mesh_refine.ply",
-                    output_file=self.cfg.openmvs_dir / "model_refined_texture.ply"
-                )
-            except Exception as e:
-                print("TextureMesh failed on refined mesh.")
-                print(e)
-
         print("=== OpenMVS DONE ===")
         print(f"Scene: {self.cfg.openmvs_dir / 'scene.mvs'}")
         print(f"Dense scene: {self.cfg.openmvs_dir / 'scene_dense.mvs'}")
-        print(f"Base mesh: {self.cfg.openmvs_dir / 'scene_dense_mesh.ply'}")
-        print(f"Refined mesh: {self.cfg.openmvs_dir / 'scene_dense_mesh_refine.ply'}")
+       
+        return str(self.cfg.openmvs_dir / "scene_dense.mvs")
 
     def run_command(self, cmd: list):
         print("\nRunning command:")
