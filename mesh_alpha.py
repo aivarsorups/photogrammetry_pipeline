@@ -115,8 +115,6 @@ def create_alpha_mesh(
             "Alpha mesh has no vertices or triangles after cleaning."
         )
 
-    print("Computing mesh normals...")
-
     try:
         mesh.orient_triangles()
     except Exception as e:
