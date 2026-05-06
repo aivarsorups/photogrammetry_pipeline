@@ -16,6 +16,7 @@ The pipeline supports:
   - Poisson Surface Reconstruction;
   - Alpha Shapes.
 
+Result: 3D mesh object
 ---
 
 ## Requirements
