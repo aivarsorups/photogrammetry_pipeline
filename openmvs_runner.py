@@ -6,7 +6,7 @@ class OpenMVSPipeline:
     def __init__(self, cfg):
         self.cfg = cfg
 
-    def run_all(self) -> str:
+    def run_all(self) -> Path:
         self.cfg.openmvs_dir.mkdir(parents=True, exist_ok=True)
 
         self.interface_colmap()
@@ -20,9 +20,8 @@ class OpenMVSPipeline:
         print("=== OpenMVS DONE ===")
         print(f"Scene: {self.cfg.openmvs_dir / 'scene.mvs'}")
         print(f"Dense scene: {self.cfg.openmvs_dir / 'scene_dense.mvs'}")
+        return self.cfg.openmvs_dir / "scene_dense.ply"
        
-        return str(self.cfg.openmvs_dir / "scene_dense.mvs")
-
     def run_command(self, cmd: list):
         print("\nRunning command:")
         print(" ".join(str(c) for c in cmd))
