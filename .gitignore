@@ -25,3 +25,6 @@ reports/
 # OS files
 .DS_Store
 Thumbs.db
+
+
+InterfaceCOLMAP-*.log
