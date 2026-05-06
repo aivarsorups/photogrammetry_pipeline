@@ -53,12 +53,14 @@ class OpenMVSPipeline:
 
     def densify_point_cloud(self):
         print("densify_point_cloud run")
+        resolution_level = self.choose_resolution_level()
 
         cmd = [
             self.cfg.openmvs_densify_path,
             "--input-file", str(self.cfg.openmvs_dir / "scene.mvs"),
             "--working-folder", str(self.cfg.openmvs_dir),
             "--output-file", str(self.cfg.openmvs_dir / "scene_dense.mvs"),
+            "--resolution-level", resolution_level,
             "--archive-type", "-1",
         ]
 
@@ -125,3 +127,73 @@ class OpenMVSPipeline:
         ]
 
         self.run_command(cmd)
+        
+        
+    def get_image_stats(self) -> dict:
+        images_dir = self.cfg.dense_dir / "images"
+
+        image_extensions = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp"}
+        image_paths = [
+            p for p in images_dir.iterdir()
+            if p.is_file() and p.suffix.lower() in image_extensions
+        ]
+
+        if not image_paths:
+            return {
+                "count": 0,
+                "avg_megapixels": 0,
+                "total_megapixels": 0,
+                "max_megapixels": 0,
+            }
+
+        megapixels = []
+
+        for image_path in image_paths:
+            try:
+                with Image.open(image_path) as img:
+                    width, height = img.size
+                    mp = (width * height) / 1_000_000
+                    megapixels.append(mp)
+            except Exception as e:
+                print(f"Could not read image size: {image_path}")
+                print(e)
+
+        if not megapixels:
+            return {
+                "count": len(image_paths),
+                "avg_megapixels": 0,
+                "total_megapixels": 0,
+                "max_megapixels": 0,
+            }
+
+        return {
+            "count": len(megapixels),
+            "avg_megapixels": sum(megapixels) / len(megapixels),
+            "total_megapixels": sum(megapixels),
+            "max_megapixels": max(megapixels),
+        }
+
+    def choose_resolution_level(self) -> str:
+        stats = self.get_image_stats()
+
+        image_count = stats["count"]
+        avg_mp = stats["avg_megapixels"]
+        total_mp = stats["total_megapixels"]
+        max_mp = stats["max_megapixels"]
+
+        print("OpenMVS image stats:")
+        print(f"  images: {image_count}")
+        print(f"  avg MP/image: {avg_mp:.2f}")
+        print(f"  max MP/image: {max_mp:.2f}")
+        print(f"  total MP: {total_mp:.2f}")
+
+        # Hard
+        if image_count >= 100 or avg_mp >= 25 or total_mp >= 2000:
+            return "3"
+
+        # Middle
+        if image_count >= 50 or avg_mp >= 12 or total_mp >= 800:
+            return "2"
+
+        # Light
+        return "1"

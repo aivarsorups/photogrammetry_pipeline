@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 import open3d as o3d
 
 
@@ -10,7 +11,7 @@ def create_alpha_mesh(
     voxel_size: float = 0.003,
     alpha: float | None = None,
     max_nn: int = 30,
-    save_downsampled: bool = False
+    save_downsampled: bool = False,
 ) -> None:
     input_path = Path(input_path)
     output_path = Path(output_path)
@@ -19,9 +20,6 @@ def create_alpha_mesh(
         raise FileNotFoundError(f"Input point cloud not found: {input_path}")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    normal_radius = voxel_size * 6.0
-    alpha_value = alpha if alpha is not None else voxel_size * 3.5
 
     print("Loading point cloud:")
     print(input_path)
@@ -38,10 +36,13 @@ def create_alpha_mesh(
 
     print(f"Downsampled points: {len(pcd_ds.points)}")
 
+    if pcd_ds.is_empty():
+        raise RuntimeError("Point cloud became empty after downsampling.")
+
     print("Removing statistical outliers...")
     pcd_ds, _ = pcd_ds.remove_statistical_outlier(
         nb_neighbors=30,
-        std_ratio=2.0
+        std_ratio=2.0,
     )
 
     print(f"After statistical outlier removal: {len(pcd_ds.points)}")
@@ -49,27 +50,32 @@ def create_alpha_mesh(
     if pcd_ds.is_empty():
         raise RuntimeError("Point cloud became empty after filtering.")
 
-    print("Estimating point cloud normals...")
-
-    pcd_ds.estimate_normals(
-        search_param=o3d.geometry.KDTreeSearchParamHybrid(
-            radius=normal_radius,
-            max_nn=max_nn
+    if len(pcd_ds.points) < 4:
+        raise RuntimeError(
+            "Not enough points to create alpha shape mesh. "
+            f"Points after filtering: {len(pcd_ds.points)}"
         )
-    )
 
-    print("Orienting point cloud normals...")
+    print("Calculating nearest-neighbor distances...")
 
-    try:
-        pcd_ds.orient_normals_consistent_tangent_plane(k=max_nn)
-    except Exception as e:
-        print("Warning: could not orient point cloud normals consistently.")
-        print(e)
+    nn_distances = np.asarray(pcd_ds.compute_nearest_neighbor_distance())
 
-    print("Point cloud has normals:", pcd_ds.has_normals())
+    if len(nn_distances) == 0:
+        raise RuntimeError("Could not compute nearest-neighbor distances.")
+
+    median_nn = float(np.median(nn_distances))
+    mean_nn = float(np.mean(nn_distances))
+
+    if not np.isfinite(median_nn) or median_nn <= 0:
+        raise RuntimeError(f"Invalid median nearest-neighbor distance: {median_nn}")
+
+    alpha_value = alpha if alpha is not None else median_nn * 3.5
+
+    print(f"Nearest-neighbor median distance: {median_nn}")
+    print(f"Nearest-neighbor mean distance:   {mean_nn}")
 
     if save_downsampled:
-        downsampled_path = output_path.parent / f"{input_path.stem}_downsampled_with_normals.ply"
+        downsampled_path = output_path.parent / f"{input_path.stem}_downsampled.ply"
         o3d.io.write_point_cloud(str(downsampled_path), pcd_ds)
         print(f"Downsampled point cloud saved to: {downsampled_path}")
 
@@ -77,7 +83,7 @@ def create_alpha_mesh(
 
     mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_alpha_shape(
         pcd_ds,
-        alpha_value
+        alpha_value,
     )
 
     if mesh.is_empty():
@@ -95,10 +101,21 @@ def create_alpha_mesh(
     mesh.remove_duplicated_triangles()
     mesh.remove_degenerate_triangles()
     mesh.remove_unreferenced_vertices()
-    mesh.remove_non_manifold_edges()
 
-    mesh.compute_triangle_normals()
-    mesh.compute_vertex_normals()
+    try:
+        mesh.remove_non_manifold_edges()
+    except Exception as e:
+        print("Warning: could not remove non-manifold edges.")
+        print(e)
+
+    mesh.remove_unreferenced_vertices()
+
+    if len(mesh.vertices) == 0 or len(mesh.triangles) == 0:
+        raise RuntimeError(
+            "Alpha mesh has no vertices or triangles after cleaning."
+        )
+
+    print("Computing mesh normals...")
 
     try:
         mesh.orient_triangles()
@@ -106,24 +123,16 @@ def create_alpha_mesh(
         print("Warning: could not orient mesh triangles.")
         print(e)
 
-    mesh.compute_triangle_normals()
-    mesh.compute_vertex_normals()
-
     print(f"Mesh vertices after cleaning: {len(mesh.vertices)}")
     print(f"Mesh triangles after cleaning: {len(mesh.triangles)}")
-    print("Mesh has triangle normals:", mesh.has_triangle_normals())
-    print("Mesh has vertex normals:", mesh.has_vertex_normals())
 
-    if len(mesh.vertices) == 0 or len(mesh.triangles) == 0:
-        raise RuntimeError(
-            "Alpha mesh has no vertices or triangles after cleaning."
-        )
+    print(f"Saving alpha mesh to: {output_path}")
 
     success = o3d.io.write_triangle_mesh(
         str(output_path),
         mesh,
         write_vertex_normals=True,
-        write_triangle_uvs=False
+        write_triangle_uvs=False,
     )
 
     if not success:
@@ -140,5 +149,5 @@ def create_alpha_mesh(
             window_name="Alpha Shape Mesh",
             width=1200,
             height=800,
-            mesh_show_back_face=True
+            mesh_show_back_face=True,
         )
