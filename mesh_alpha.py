@@ -32,7 +32,7 @@ def create_alpha_mesh(
     print(f"Original points: {len(pcd.points)}")
 
     print(f"Downsampling with voxel_size = {voxel_size}")
-    pcd_ds = pcd.voxel_down_sample(voxel_size=voxel_size)
+    pcd_ds = pcd.voxel_down_sample(voxel_size=voxel_size) # punktu mākoņa samazināšana, izmantojot vokseļu metodi
 
     print(f"Downsampled points: {len(pcd_ds.points)}")
 
@@ -40,7 +40,7 @@ def create_alpha_mesh(
         raise RuntimeError("Point cloud became empty after downsampling.")
 
     print("Removing statistical outliers...")
-    pcd_ds, _ = pcd_ds.remove_statistical_outlier(
+    pcd_ds, _ = pcd_ds.remove_statistical_outlier( # tiek izņemti punkti, kas atrodas pārāk tālu no saviem kaimiņpunktiem 
         nb_neighbors=30,
         std_ratio=2.0,
     )
@@ -58,7 +58,7 @@ def create_alpha_mesh(
 
     print("Calculating nearest-neighbor distances...")
 
-    nn_distances = np.asarray(pcd_ds.compute_nearest_neighbor_distance())
+    nn_distances = np.asarray(pcd_ds.compute_nearest_neighbor_distance()) # tiek aprēķināti attālumi līdz tuvākajiem kaimiņu punktiem
 
     if len(nn_distances) == 0:
         raise RuntimeError("Could not compute nearest-neighbor distances.")
@@ -69,7 +69,7 @@ def create_alpha_mesh(
     if not np.isfinite(median_nn) or median_nn <= 0:
         raise RuntimeError(f"Invalid median nearest-neighbor distance: {median_nn}")
 
-    alpha_value = alpha if alpha is not None else median_nn * 3.5
+    alpha_value = alpha if alpha is not None else median_nn * 3.5 # mediānas attālums tiek izmantots alfa parametra noteikšanai. 
 
     print(f"Nearest-neighbor median distance: {median_nn}")
     print(f"Nearest-neighbor mean distance:   {mean_nn}")
@@ -96,8 +96,8 @@ def create_alpha_mesh(
     print(f"Mesh triangles before cleaning: {len(mesh.triangles)}")
 
     print("Cleaning mesh...")
-
-    mesh.remove_duplicated_vertices()
+    # tiek veikta trijstūru tīkla tīrīšana, no modeļa tiek izņemtas dublētas virsotnes, dublēti trijstūri, deģenerēti trijstūri un neizmantotas virsotnes
+    mesh.remove_duplicated_vertices() 
     mesh.remove_duplicated_triangles()
     mesh.remove_degenerate_triangles()
     mesh.remove_unreferenced_vertices()

@@ -18,12 +18,12 @@ def create_poisson_mesh(input_path: Path, output_path: Path, visualize: bool = F
     print(f"Loaded point cloud: {input_path}")
     print(f"Original points: {len(pcd.points)}")
 
-    # Downsample point cloud
+    # punktu mākonis tiek samazināts, izmantojot vokseļu metodi
     pcd = pcd.voxel_down_sample(voxel_size=0.01)
 
     print(f"Downsampled points: {len(pcd.points)}")
 
-    # Estimate normals
+    # normāļu aprēķināšanas 
     pcd.estimate_normals(
         search_param=o3d.geometry.KDTreeSearchParamHybrid(
             radius=0.05,
@@ -31,16 +31,16 @@ def create_poisson_mesh(input_path: Path, output_path: Path, visualize: bool = F
         )
     )
 
-    # Orient normals
+    # normāļu orientācijas saskaņošana
     pcd.orient_normals_consistent_tangent_plane(50)
 
-    # Poisson reconstruction
+    # Puasona algoritma realizācija
     mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(
         pcd,
         depth=10
     )
 
-    # Remove low-density vertices
+    # tiek noņemtas virsotnes ar zemākajām blīvuma vērtībām
     densities = np.asarray(densities)
     threshold = np.quantile(densities, 0.02)
     mesh.remove_vertices_by_mask(densities < threshold)

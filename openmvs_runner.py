@@ -187,13 +187,10 @@ class OpenMVSPipeline:
         print(f"  max MP/image: {max_mp:.2f}")
         print(f"  total MP: {total_mp:.2f}")
 
-        # Hard
         if image_count >= 100 or avg_mp >= 25 or total_mp >= 2000:
             return "3"
 
-        # Middle
         if image_count >= 50 or avg_mp >= 12 or total_mp >= 800:
             return "2"
 
-        # Light
         return "1"

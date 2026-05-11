@@ -81,7 +81,7 @@ def get_selected_mesh_algorithms(args) -> list[str]:
     if args.alpha:
         selected.append("alpha")
 
-    # If user did not select anything, run all algorithms
+    # Ja lietotājs nav izvēlējies nevienu algoritmu, tad tiek izvelēti visi
     if not selected:
         selected = ["bpa", "poisson", "alpha"]
 

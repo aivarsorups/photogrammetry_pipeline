@@ -26,14 +26,14 @@ def create_bpa_mesh(input_path: Path, output_path: Path, visualize: bool = False
         )
         pcd.orient_normals_consistent_tangent_plane(30)
 
-    distances = pcd.compute_nearest_neighbor_distance()
+    distances = pcd.compute_nearest_neighbor_distance() # katram punktam tiek salasīti  attālumi līdz tuvākajiem kaimiņu punktam
     avg_dist = np.mean(distances)
     median_dist = np.median(distances)
 
     print("Average NN distance:", avg_dist)
     print("Median NN distance:", median_dist)
 
-    radii = [
+    radii = [ # mediānas attālums tiek izmantots bumbiņas rādiusa noteikšanai. 
         1.5 * median_dist,
         2.0 * median_dist,
         4.0 * median_dist
